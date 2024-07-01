@@ -157,6 +157,14 @@ def delete_product(id):
                 'status': 400,
                 'Error': 'ERR',
             }, 400
+@product_bp.route('/product/search/<string:data_search>', methods=['GET'])
+def search_product(data_search):
+    try:
+        products = product.query.filter(product.Product_Name.like(f"%{data_search}%")).all()
+        data = [{'idProduct': product.idProduct, 'Product_Name': product.Product_Name, 'Product_Image': product.Product_Image, 'Product_Price': product.Product_Price } for product in products]
+        return jsonify({'data': data}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 @product_bp.route('/product/getProductByType/<type_id>', methods=['GET'])
 def get_products_by_type(type_id):
     products = product.query.join(typeproduct).filter(typeproduct.TypeProduct_ID == type_id).all()
